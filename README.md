@@ -1,3 +1,24 @@
+# Resultados da APS2
+
+| Versão | Tempo médio de treinamento |
+|:---|:---|
+| CPU original | 0,47122 s |
+| CPU com blocos de oito | 0,36396 s |
+
+A otimização reduziu o tempo de treinamento em 22,76%.
+As saídas impressas coincidiram nas cinco comparações.
+
+Comparação realizada no compute10, com cinco execuções
+alternadas, usando 1 processo, 1 CPU e 1 GB de memória.
+Compilador: GCC 14.2.0, com as opções -std=c++17 -O2 -g.
+
+- [Discussão e medições — Issue #1](https://github.com/alis-on-araujo/aps2-supercomp/issues/1)
+- [Integração — PR #2](https://github.com/alis-on-araujo/aps2-supercomp/pull/2)
+- [Versão original — v0.1-baseline](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.1-baseline)
+- [CPU otimizada — v0.2-cpu-blocos](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.2-cpu-blocos)
+
+---
+
 # Projeto Barenn: O Legado, a Sobrevivência e o Salto para a GPU
 
 Era uma segunda-feira aparentemente tranquila quando a demanda chegou à sua mesa. A liderança técnica se aproximou com um sorriso contido e soltou aquela frase clássica que faz qualquer engenheiro gelar por dentro:
