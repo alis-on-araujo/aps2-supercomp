@@ -64,62 +64,55 @@ public:
     }
 
     vector<float> Backward(vector<float> grad_out, float learning_rate) {
-    // Calcula o gradiente antes da ativação.
-    vector<float> delta(out_features);
+        // Delta é o gradiente da perda em relação à soma antes da ativação.
+        // Na ReLU, o gradiente passa apenas quando essa soma é positiva.
+        vector<float> delta(out_features);
+        for (int i = 0; i < out_features; ++i) {
+            delta[i] = final ? grad_out[i]
+                             : grad_out[i] * (last_z[i] > 0.0f ? 1.0f : 0.0f);
+        }
 
-    for (int i = 0; i < out_features; ++i) {
-        delta[i] = final
-            ? grad_out[i]
-            : grad_out[i] * (last_z[i] > 0.0f ? 1.0f : 0.0f);
-    }
+        vector<float> grad_in(in_features);
+        int inicio = 0;
 
-    vector<float> grad_in(in_features);
-    const int fim_blocos = (in_features / 8) * 8;
+        for (; inicio + 8 <= in_features; inicio += 8) {
+            float somas[8] = {};
 
-    // Distribui os blocos de oito posições entre as threads.
-    #pragma omp parallel for schedule(static)
-    for (int inicio = 0; inicio < fim_blocos; inicio += 8) {
-        float somas[8] = {};
+            for (int j = 0; j < out_features; ++j) {
+                const float d = delta[j];
+                const auto& linha = weights[j];
 
-        for (int j = 0; j < out_features; ++j) {
-            const float d = delta[j];
-            const auto& linha = weights[j];
+                for (int k = 0; k < 8; ++k) {
+                    somas[k] += d * linha[inicio + k];
+                }
+            }
 
             for (int k = 0; k < 8; ++k) {
-                somas[k] += d * linha[inicio + k];
+                grad_in[inicio + k] = somas[k];
             }
         }
 
-        for (int k = 0; k < 8; ++k) {
-            grad_in[inicio + k] = somas[k];
-        }
-    }
+        // Trata posições restantes, caso existam.
+        for (; inicio < in_features; ++inicio) {
+            float sum = 0.0f;
 
-    // O laço paralelo já terminou antes de continuar.
+            for (int j = 0; j < out_features; ++j) {
+                sum += delta[j] * weights[j][inicio];
+            }
 
-    // Calcula as posições restantes, caso existam.
-    for (int inicio = fim_blocos; inicio < in_features; ++inicio) {
-        float sum = 0.0f;
-
-        for (int j = 0; j < out_features; ++j) {
-            sum += delta[j] * weights[j][inicio];
-        }
-
-        grad_in[inicio] = sum;
-    }
-
-    // Atualiza os pesos depois de calcular todos os gradientes.
-    for (int i = 0; i < out_features; ++i) {
-        for (int j = 0; j < in_features; ++j) {
-            weights[i][j] -=
-                learning_rate * (delta[i] * last_input[j]);
-        }
-
-        bias[i] -= learning_rate * delta[i];
-    }
-
-    return grad_in;
+    grad_in[inicio] = sum;
 }
+
+        // SGD por amostra. O gradiente do peso é delta vezes a entrada.
+        // O gradiente do viés é o próprio delta.
+        for (int i = 0; i < out_features; ++i) {
+            for (int j = 0; j < in_features; ++j) {
+                weights[i][j] -= learning_rate * (delta[i] * last_input[j]);
+            }
+            bias[i] -= learning_rate * delta[i];
+        }
+        return grad_in;
+    }
 };
 
 struct Amostra {
