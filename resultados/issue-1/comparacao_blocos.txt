@@ -1,0 +1,11 @@
+compute10
+barenn_baseline: Tempo de treino 0.4705 s
+barenn_cpu_blocos: Tempo de treino 0.3637 s
+barenn_baseline: Tempo de treino 0.4705 s
+barenn_cpu_blocos: Tempo de treino 0.3647 s
+barenn_baseline: Tempo de treino 0.4714 s
+barenn_cpu_blocos: Tempo de treino 0.3639 s
+barenn_baseline: Tempo de treino 0.4732 s
+barenn_cpu_blocos: Tempo de treino 0.3638 s
+barenn_baseline: Tempo de treino 0.4705 s
+barenn_cpu_blocos: Tempo de treino 0.3637 s

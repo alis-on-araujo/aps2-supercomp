@@ -72,15 +72,36 @@ public:
                              : grad_out[i] * (last_z[i] > 0.0f ? 1.0f : 0.0f);
         }
 
-        // O gradiente da entrada usa os pesos anteriores à atualização.
         vector<float> grad_in(in_features);
-        for (int i = 0; i < in_features; ++i) {
-            float sum = 0;
+        int inicio = 0;
+
+        for (; inicio + 8 <= in_features; inicio += 8) {
+            float somas[8] = {};
+
             for (int j = 0; j < out_features; ++j) {
-                sum += delta[j] * weights[j][i];
+                const float d = delta[j];
+                const auto& linha = weights[j];
+
+                for (int k = 0; k < 8; ++k) {
+                    somas[k] += d * linha[inicio + k];
+                }
             }
-            grad_in[i] = sum;
+
+            for (int k = 0; k < 8; ++k) {
+                grad_in[inicio + k] = somas[k];
+            }
         }
+
+        // Trata posições restantes, caso existam.
+        for (; inicio < in_features; ++inicio) {
+            float sum = 0.0f;
+
+            for (int j = 0; j < out_features; ++j) {
+                sum += delta[j] * weights[j][inicio];
+            }
+
+    grad_in[inicio] = sum;
+}
 
         // SGD por amostra. O gradiente do peso é delta vezes a entrada.
         // O gradiente do viés é o próprio delta.
