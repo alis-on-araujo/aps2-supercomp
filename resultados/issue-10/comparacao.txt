@@ -1,0 +1,38 @@
+compute22
+name, driver_version, memory.total [MiB]
+NVIDIA RTX A1000, 570.124.06, 8188 MiB
+cpu, rodada 1: Tempo de treino 0.3616 s
+cpu, rodada 1: Tempo de avaliacao 1.259466 ms
+inicial, rodada 1: Tempo de treino 17.6458 s
+inicial, rodada 1: Tempo de avaliacao 77.256313 ms
+otimizado, rodada 1: Tempo de treino 0.5020 s
+otimizado, rodada 1: Tempo de avaliacao 0.327563 ms
+otimizado, rodada 1: Validacao numerica: OK
+cpu, rodada 2: Tempo de treino 0.3614 s
+cpu, rodada 2: Tempo de avaliacao 1.240251 ms
+inicial, rodada 2: Tempo de treino 17.6948 s
+inicial, rodada 2: Tempo de avaliacao 77.158487 ms
+otimizado, rodada 2: Tempo de treino 0.4999 s
+otimizado, rodada 2: Tempo de avaliacao 0.331448 ms
+otimizado, rodada 2: Validacao numerica: OK
+cpu, rodada 3: Tempo de treino 0.3619 s
+cpu, rodada 3: Tempo de avaliacao 1.244689 ms
+inicial, rodada 3: Tempo de treino 17.7666 s
+inicial, rodada 3: Tempo de avaliacao 77.151753 ms
+otimizado, rodada 3: Tempo de treino 0.4983 s
+otimizado, rodada 3: Tempo de avaliacao 0.326758 ms
+otimizado, rodada 3: Validacao numerica: OK
+cpu, rodada 4: Tempo de treino 0.3613 s
+cpu, rodada 4: Tempo de avaliacao 1.244629 ms
+inicial, rodada 4: Tempo de treino 17.9749 s
+inicial, rodada 4: Tempo de avaliacao 77.309232 ms
+otimizado, rodada 4: Tempo de treino 0.4976 s
+otimizado, rodada 4: Tempo de avaliacao 0.325253 ms
+otimizado, rodada 4: Validacao numerica: OK
+cpu, rodada 5: Tempo de treino 0.3624 s
+cpu, rodada 5: Tempo de avaliacao 1.247138 ms
+inicial, rodada 5: Tempo de treino 17.9389 s
+inicial, rodada 5: Tempo de avaliacao 77.171566 ms
+otimizado, rodada 5: Tempo de treino 0.4985 s
+otimizado, rodada 5: Tempo de avaliacao 0.334134 ms
+otimizado, rodada 5: Validacao numerica: OK
