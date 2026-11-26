@@ -2,6 +2,7 @@
 #include <array>
 #include <chrono>
 #include <cmath>
+#include <cstddef>
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
@@ -58,6 +59,19 @@ public:
             }
             last_z[i] = sum;
             // As camadas ocultas usam ReLU. A última devolve escores lineares.
+            out[i] = final ? sum : max(0.0f, sum);
+        }
+        return out;
+    }
+
+    // Inferência com pesos fixos: não altera os dados usados pelo treinamento.
+    vector<float> Predict(const vector<float>& input) const {
+        vector<float> out(out_features);
+        for (int i = 0; i < out_features; ++i) {
+            float sum = bias[i];
+            for (int j = 0; j < in_features; ++j) {
+                sum += input[j] * weights[i][j];
+            }
             out[i] = final ? sum : max(0.0f, sum);
         }
         return out;
@@ -175,7 +189,7 @@ float perda(const vector<float>& escores, int rotulo,
     return total;
 }
 
-void avaliar(DenseLayer& l1, DenseLayer& l2, DenseLayer& l3,
+void avaliar(const DenseLayer& l1, const DenseLayer& l2, const DenseLayer& l3,
              const vector<Amostra>& teste) {
     struct Exemplo {
         size_t linha;
@@ -194,10 +208,18 @@ void avaliar(DenseLayer& l1, DenseLayer& l2, DenseLayer& l3,
     size_t exemplos_erro = 0;
     double perda_total = 0;
 
-    // Só fazemos forward aqui. Os pesos ficam fixos.
+    // Cada thread calcula imagens diferentes e só lê os pesos das camadas.
+    vector<vector<float>> escores_lote(teste.size());
+    #pragma omp parallel for schedule(static)
+    for (ptrdiff_t i = 0; i < static_cast<ptrdiff_t>(teste.size()); ++i) {
+        escores_lote[i] = l3.Predict(l2.Predict(l1.Predict(teste[i].imagem)));
+    }
+
+    // A barreira implícita do parallel for termina antes desta coleta.
+    // Mantém a ordem original das somas, dos exemplos e das impressões.
     for (size_t i = 0; i < teste.size(); ++i) {
         const auto& amostra = teste[i];
-        auto escores = l3.Forward(l2.Forward(l1.Forward(amostra.imagem)));
+        const auto& escores = escores_lote[i];
         // O índice do maior escore indica a classe prevista.
         int previsto = static_cast<int>(
             max_element(escores.begin(), escores.end()) - escores.begin());
@@ -321,7 +343,13 @@ int main(int argc, char** argv) {
                  << " | perda media " << perdas[epoca] << "\n";
         }
         cout << "Tempo de treino " << tempo.count() << " s\n";
+        // Inclui inferência, métricas e impressão, como na medição sequencial.
+        const auto inicio_avaliacao = chrono::steady_clock::now();
         Barenn::avaliar(l1, l2, l3, teste);
+        const chrono::duration<double, milli> tempo_avaliacao =
+            chrono::steady_clock::now() - inicio_avaliacao;
+        cout << "Tempo de avaliacao " << setprecision(6)
+             << tempo_avaliacao.count() << " ms\n";
     } catch (const exception& erro) {
         cerr << "Erro: " << erro.what() << "\n";
         return 1;

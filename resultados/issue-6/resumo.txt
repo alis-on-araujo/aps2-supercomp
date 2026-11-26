@@ -1,0 +1,10 @@
+Ambiente: Franky, compute10, merry_cpu
+Alocacao: 1 processo, 2 CPUs, 1 GB
+Flags: -std=c++17 -O2 -g -fopenmp
+Cinco rodadas alternadas com 1 e 2 threads
+Medicao: avaliacao completa, incluindo metricas e impressao
+Corretude: 10 saidas impressas iguais a referencia, excluidos os tempos
+Media com 1 thread: 1.321218 ms
+Media com 2 threads: 0.865017 ms
+Speedup: 1.5274x
+Reducao: 34.53%
