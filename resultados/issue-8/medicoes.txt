@@ -1,0 +1,23 @@
+compute20
+name, driver_version, memory.total [MiB]
+NVIDIA RTX A1000, 570.124.06, 8188 MiB
+Rodada 1: Tempo de treino 17.6226 s
+Rodada 1: Acuracia 95.5% | 1717 acertos em 1797 imagens
+Rodada 1: Tempo de avaliacao 77.129406 ms
+Rodada 1: Validacao numerica: OK
+Rodada 2: Tempo de treino 17.6176 s
+Rodada 2: Acuracia 95.5% | 1717 acertos em 1797 imagens
+Rodada 2: Tempo de avaliacao 77.117704 ms
+Rodada 2: Validacao numerica: OK
+Rodada 3: Tempo de treino 17.5754 s
+Rodada 3: Acuracia 95.5% | 1717 acertos em 1797 imagens
+Rodada 3: Tempo de avaliacao 77.133853 ms
+Rodada 3: Validacao numerica: OK
+Rodada 4: Tempo de treino 17.5788 s
+Rodada 4: Acuracia 95.5% | 1717 acertos em 1797 imagens
+Rodada 4: Tempo de avaliacao 77.081888 ms
+Rodada 4: Validacao numerica: OK
+Rodada 5: Tempo de treino 17.9259 s
+Rodada 5: Acuracia 95.5% | 1717 acertos em 1797 imagens
+Rodada 5: Tempo de avaliacao 77.133547 ms
+Rodada 5: Validacao numerica: OK

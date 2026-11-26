@@ -1,0 +1,32 @@
+GPU: NVIDIA RTX A1000
+TREINO | 3823 imagens
+Epoca  1/1 | perda media 0.4129
+Tempo de treino 0.4542 s
+
+AVALIACAO FINAL
+Acuracia 63.9% | 1148 acertos em 1797 imagens
+Perda media 0.3087
+
+ALGUMAS INFERENCIAS
+Esperado  Previsto
+       0         0
+       1         1
+       2         1
+       3         3
+       5         3
+       8         2
+
+CONFUSOES MAIS FREQUENTES
+Esperado  Previsto  Ocorrencias
+       9         3           96
+       8         1           67
+       5         9           54
+Tempo de avaliacao 77.334603 ms
+
+VALIDACAO CONTRA CPU | 1 epoca(s)
+Tolerancia: absoluta 1e-5 + relativa 1e-5
+Perdas: 1; maior erro absoluto: 0.000000e+00; fora da tolerancia: 0
+Escores: 17970; maior erro absoluto: 0.000000e+00; fora da tolerancia: 0
+Parametros: 2778; maior erro absoluto: 0.000000e+00; fora da tolerancia: 0
+Predicoes diferentes: 0
+Validacao numerica: OK
