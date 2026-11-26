@@ -1,0 +1,11 @@
+compute10
+1 thread(s), rodada 1: Tempo de avaliacao 1.319744 ms
+2 thread(s), rodada 1: Tempo de avaliacao 0.841407 ms
+1 thread(s), rodada 2: Tempo de avaliacao 1.319771 ms
+2 thread(s), rodada 2: Tempo de avaliacao 0.890937 ms
+1 thread(s), rodada 3: Tempo de avaliacao 1.336879 ms
+2 thread(s), rodada 3: Tempo de avaliacao 0.835913 ms
+1 thread(s), rodada 4: Tempo de avaliacao 1.317716 ms
+2 thread(s), rodada 4: Tempo de avaliacao 0.872032 ms
+1 thread(s), rodada 5: Tempo de avaliacao 1.311980 ms
+2 thread(s), rodada 5: Tempo de avaliacao 0.884796 ms
