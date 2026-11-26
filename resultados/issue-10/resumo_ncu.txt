@@ -1,0 +1,30 @@
+==PROF== Connected to process 633161 (/home/alisonao/scratch/aps2/aps2-supercomp/barenn_cuda_otimizado)
+==ERROR== ERR_NVGPUCTRPERM - The user does not have permission to access NVIDIA GPU Performance Counters on the target device 0. For instructions on enabling permissions and to get more information see https://developer.nvidia.com/ERR_NVGPUCTRPERM
+GPU: NVIDIA RTX A1000
+Modo: CUDA com fusao
+TREINO | 3823 imagens
+Epoca  1/1 | perda media 0.4129
+Tempo de treino 0.1890 s
+
+AVALIACAO FINAL
+Acuracia 63.9% | 1148 acertos em 1797 imagens
+Perda media 0.3087
+
+ALGUMAS INFERENCIAS
+Esperado  Previsto
+       0         0
+       1         1
+       2         1
+       3         3
+       5         3
+       8         2
+
+CONFUSOES MAIS FREQUENTES
+Esperado  Previsto  Ocorrencias
+       9         3           96
+       8         1           67
+       5         9           54
+Tempo de avaliacao 88.471020 ms
+==PROF== Disconnected from process 633161
+
+Status ncu: 1

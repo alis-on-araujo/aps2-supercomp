@@ -1,21 +1,151 @@
 # Resultados da APS2
 
-| Versão | Tempo médio de treinamento |
-|:---|:---|
-| CPU original | 0,47122 s |
-| CPU com blocos de oito | 0,36396 s |
+Rede densa 64 → 32 → 16 → 10, treinada com optdigits.tra (3.823 imagens) e avaliada com optdigits.tes (1.797 imagens). Mantivemos 51 épocas, taxa de aprendizado 0,02, semente 1337 em cada camada e a ordem das amostras do arquivo.
 
-A otimização reduziu o tempo de treinamento em 22,76%.
-As saídas impressas coincidiram nas cinco comparações.
+## Comparação consolidada
 
-Comparação realizada no compute10, com cinco execuções
-alternadas, usando 1 processo, 1 CPU e 1 GB de memória.
-Compilador: GCC 14.2.0, com as opções -std=c++17 -O2 -g.
+Médias de cinco execuções. Os resultados históricos de CPU e os resultados de GPU foram obtidos em nós diferentes; a comparação controlada no mesmo nó está na tabela seguinte.
 
-- [Discussão e medições — Issue #1](https://github.com/alis-on-araujo/aps2-supercomp/issues/1)
-- [Integração — PR #2](https://github.com/alis-on-araujo/aps2-supercomp/pull/2)
-- [Versão original — v0.1-baseline](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.1-baseline)
-- [CPU otimizada — v0.2-cpu-blocos](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.2-cpu-blocos)
+| Versão | Ambiente | Treino (s) | Avaliação (ms) | Marco |
+|:---|:---|---:|---:|:---|
+| CPU original | compute10, merry_cpu, 1 CPU | 0,47122 | Não medida neste teste | [v0.1-baseline](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.1-baseline) |
+| CPU com blocos de oito | compute10, merry_cpu, 1 CPU | 0,36396 | Não medida neste teste | [v0.2-cpu-blocos](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.2-cpu-blocos) |
+| CUDA inicial | compute22, merry_gpu, 1 CPU e 1 GPU | 17,80420 | 77,209470 | [v0.5-cuda-inicial](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.5-cuda-inicial) |
+| CUDA com fusão e memória compartilhada | compute22, merry_gpu, 1 CPU e 1 GPU | 0,49926 | 0,329031 | [v0.6-cuda-fusao](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.6-cuda-fusao) |
+
+A otimização em blocos reduziu o tempo de treinamento CPU em 22,76%. A fusão CUDA reduziu o treino em 97,20% em relação à CUDA inicial, com speedup de 35,66x.
+
+### Comparação controlada no compute22
+
+Cinco rodadas alternadas, cada uma executando CPU de referência, CUDA inicial e CUDA otimizada na mesma alocação: 1 processo, 1 CPU, 1 GPU e 1 GB de memória. GPU NVIDIA RTX A1000, 8.188 MiB reportados, driver 570.124.06. A referência CPU desta tabela é o modo sequencial --cpu do programa CUDA.
+
+| Modo | Treino (s) | Avaliação (ms) |
+|:---|---:|---:|
+| CPU de referência | 0,36172 | 1,247235 |
+| CUDA inicial | 17,80420 | 77,209470 |
+| CUDA otimizada | 0,49926 | 0,329031 |
+
+A CPU permaneceu mais rápida no treino: a CUDA otimizada levou aproximadamente 38,02% mais tempo. Na avaliação, a CUDA otimizada foi 3,79x mais rápida que a CPU de referência e 234,66x mais rápida que a CUDA inicial. O ganho em relação à CUDA inicial não significa ganho sobre a CPU em todas as etapas.
+
+### Paralelismo multicore na avaliação
+
+No compute10, cinco rodadas alternadas do mesmo executável OpenMP, com alocação de 2 CPUs e 1 GB:
+
+| Configuração | Tempo médio da avaliação (ms) |
+|:---|---:|
+| 1 thread | 1,321218 |
+| 2 threads | 0,865017 |
+
+Redução de 34,53%, com speedup de 1,53x. As inferências usam pesos fixos e dados temporários privados; as métricas são reunidas na ordem original. Esse ganho pertence à avaliação, não ao treinamento.
+
+## Issues, tags e evidências
+
+| Bloco de trabalho | Discussão | Tag anotada | Evidências |
+|:---|:---|:---|:---|
+| Referência original | [Issue #1](https://github.com/alis-on-araujo/aps2-supercomp/issues/1) | [v0.1-baseline](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.1-baseline) | [Medições e gprof](resultados/issue-1/) |
+| Otimização CPU em blocos | [Issue #1](https://github.com/alis-on-araujo/aps2-supercomp/issues/1) | [v0.2-cpu-blocos](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.2-cpu-blocos) | [Comparação](resultados/issue-1/comparacao_blocos.txt) |
+| Experimento OpenMP no Backward e restauração | [Issue #4](https://github.com/alis-on-araujo/aps2-supercomp/issues/4) | [v0.3-cpu-openmp-avaliado](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.3-cpu-openmp-avaliado) | [Pré-teste](resultados/issue-4/) |
+| Avaliação multicore | [Issue #6](https://github.com/alis-on-araujo/aps2-supercomp/issues/6) | [v0.4-cpu-avaliacao-openmp](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.4-cpu-avaliacao-openmp) | [Resumo e validação](resultados/issue-6/resumo.txt) |
+| Migração funcional CUDA | [Issue #8](https://github.com/alis-on-araujo/aps2-supercomp/issues/8) | [v0.5-cuda-inicial](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.5-cuda-inicial) | [Medições](resultados/issue-8/medicoes.txt) e [Nsight](resultados/issue-8/resumo_nsys.txt) |
+| Fusão CUDA e memória compartilhada | [Issue #10](https://github.com/alis-on-araujo/aps2-supercomp/issues/10) | [v0.6-cuda-fusao](https://github.com/alis-on-araujo/aps2-supercomp/tree/v0.6-cuda-fusao) | [Relatório técnico](resultados/issue-10/relatorio.md), [comparação](resultados/issue-10/comparacao.txt), [Nsight Systems](resultados/issue-10/resumo_nsys.txt) e [tentativa Nsight Compute](resultados/issue-10/resumo_ncu.txt) |
+
+## Análise dos resultados
+
+O gprof atribuiu 65,85% do tempo amostrado do programa original ao Backward, com 584.919 chamadas. A primeira melhoria reorganizou o cálculo de grad_in em grupos de oito entradas. O ganho foi medido; cache misses e vetorização não foram medidos diretamente.
+
+O pré-teste com OpenMP no Backward teve 0,4587 s com uma thread e 2,6753 s com duas, em uma execução por configuração. As regiões paralelas muito curtas e frequentes podem explicar o custo adicional. O experimento foi registrado e o código de treinamento sequencial foi restaurado antes do marco v0.3.
+
+Na avaliação, cada imagem é independente depois que os pesos estão fixos. Uma única região OpenMP distribui esse trabalho, enquanto a coleta sequencial mantém a ordem das métricas. Como a avaliação já era curta em relação ao treinamento, seu ganho tem efeito pequeno no tempo conjunto dessas etapas, em linha com a limitação descrita pela Lei de Amdahl.
+
+Na migração CUDA inicial, cada camada devolvia resultados à CPU. As cópias síncronas e os lançamentos repetidos custavam muito em relação aos pequenos cálculos. A versão otimizada mantém o lote na GPU, coopera dentro de cada amostra e usa memória compartilhada para pesos e intermediários durante uma época. As linhas dos pesos têm uma posição extra para distribuir as leituras entre bancos. As barreiras garantem o uso dos pesos antigos no cálculo dos gradientes e a conclusão das atualizações antes da próxima amostra.
+
+O treinamento continua SGD por amostra, na ordem original. Um bloco por época evita a necessidade de sincronizar blocos para essas dependências, mas limita o paralelismo disponível no treino. Não estamos treinando imagens simultaneamente. Na avaliação, os pesos ficam fixos e um único lançamento distribui as imagens entre blocos.
+
+### Profiling GPU: mesma carga de uma época mais avaliação
+
+| Métrica do Nsight Systems | CUDA inicial | CUDA otimizada |
+|:---|---:|---:|
+| Lançamentos de kernels | 51.267 | 2 |
+| Chamadas cudaMemcpy | 56.664 | 11 |
+| Tempo acumulado de kernels na GPU | 90,763354 ms | 12,390191 ms |
+| Tempo acumulado das cópias na GPU | 45,050417 ms | 0,129405 ms |
+
+As duas execuções com profiler usaram uma época e a avaliação completa. Seus tempos sofrem instrumentação e não substituem as médias sem profiler de 51 épocas. Os percentuais de cada relatório têm seu próprio denominador; não são percentuais do tempo total da aplicação. O tempo da API cudaMemcpy pode incluir espera por kernels e não equivale ao tempo de transmissão na GPU. A redução observada não comprova saturação da largura de banda PCIe na versão inicial.
+
+Na versão otimizada, a primeira inicialização/alocação também pesa no perfil completo. As alocações das camadas ocorrem antes do cronômetro de treinamento. O alto percentual de cudaMalloc no relatório de APIs não significa que esse percentual do treino foi gasto alocando memória por amostra.
+
+O Nsight Compute foi tentado para coletar LaunchStats, Occupancy e SpeedOfLight, mas retornou ERR_NVGPUCTRPERM por falta de acesso aos contadores. Portanto, não apresentamos ocupação real, throughput de hardware ou um roofline medido. Não atribuímos o resultado a métricas que não foram coletadas.
+
+## Corretude e metodologia
+
+- CPU em blocos: cinco saídas impressas coincidiram com a referência, excluindo o tempo.
+- OpenMP na avaliação: dez saídas impressas coincidiram com a referência, excluindo os tempos.
+- CUDA inicial e otimizada: cinco treinos completos por versão passaram na comparação com a CPU de perdas por época, 17.970 escores, 2.778 parâmetros e classes previstas. A tolerância numérica é erro absoluto de 1e-5 mais erro relativo de 1e-5; todas as classes previstas devem coincidir.
+- Referência final: 95,5% de acurácia, 1.717 acertos em 1.797 imagens e perda média de 0,0432. Nos testes de uma época, a acurácia é diferente; a comparação usa CPU com a mesma quantidade de épocas.
+- Treino: mede o processamento das épocas; leitura dos arquivos e criação/inicialização das camadas ficam fora. No modo otimizado, empacotamento, alocações dos buffers do lote e transferências de treinamento ficam dentro.
+- Avaliação: inclui inferência, métricas e impressão; no modo GPU otimizado inclui preparação e transferências do lote. A validação contra a CPU é feita depois dos cronômetros.
+- As execuções foram processos novos, sem uma fase separada de aquecimento de kernels. Os tempos refletem também o primeiro lançamento e os custos de runtime que ocorrem dentro dos intervalos medidos.
+- CPU: GCC 14.2.0, -std=c++17 -O2 -g; na avaliação paralela acrescentamos -fopenmp. CUDA: toolkit 12.8.1, -std=c++17 -O2 -lineinfo --fmad=false. Nsight Systems 2024.6.2.
+- perf e Valgrind não estavam disponíveis nos nós CPU testados, e foi usado gprof como alternativa. Não há medição própria de cache misses. O arquivo Callgrind antigo herdado no repositório não é utilizado como evidência deste trabalho.
+
+## Como compilar e executar no Franky
+
+Execute a partir da pasta do repositório, onde estão os dois arquivos optdigits. Para a versão final:
+
+```bash
+g++ -std=c++17 -O2 -g -fopenmp barenn.cpp -o barenn_cpu_final
+module load cuda/12.8.1
+nvcc -std=c++17 -O2 -lineinfo --fmad=false barenn_cuda.cu -o barenn_cuda
+```
+
+CPU com avaliação em duas threads:
+
+```bash
+srun --partition=merry_cpu --ntasks=1 --cpus-per-task=2 --mem=1G env OMP_NUM_THREADS=2 OMP_DYNAMIC=FALSE OMP_PLACES=cores OMP_PROC_BIND=TRUE ./barenn_cpu_final
+```
+
+CUDA otimizada com 51 épocas e validação:
+
+```bash
+srun --partition=merry_gpu --gres=gpu:1 --ntasks=1 --cpus-per-task=1 --mem=1G ./barenn_cuda --otimizado --validar
+```
+
+Teste curto: acrescente --epocas 1. O modo --cpu executa a referência sequencial; sem --cpu e sem --otimizado, executa o caminho CUDA inicial. Para a comparação exata dos marcos, use as respectivas tags: o binário CUDA inicial das medições foi compilado a partir da v0.5.
+
+Para verificar um marco, faça git checkout seguido do nome da tag em uma cópia limpa do repositório. Nas tags v0.1 a v0.3, compile barenn.cpp com g++ -std=c++17 -O2 -g. A partir da v0.4, use também -fopenmp para habilitar a avaliação paralela. O arquivo barenn_cuda.cu existe a partir da v0.5; --otimizado existe a partir da v0.6. Ao terminar, volte ao ramo principal master.
+
+### Reproduzir a comparação controlada
+
+Compile o executável inicial na tag v0.5 e preserve-o como barenn_cuda_inicial. Volte à versão final e compile barenn_cuda_otimizado com as mesmas flags CUDA. Dentro de uma alocação merry_gpu com 1 GPU, 1 processo, 1 CPU e 1 GB, execute cinco rodadas alternadas:
+
+```bash
+./barenn_cuda_otimizado --cpu
+./barenn_cuda_inicial
+./barenn_cuda_otimizado --otimizado --validar
+```
+
+As saídas completas das cinco rodadas estão em resultados/issue-10. Para reproduzir a avaliação multicore, alterne OMP_NUM_THREADS=1 e OMP_NUM_THREADS=2 do mesmo executável CPU numa alocação de 2 CPUs, mantendo OMP_DYNAMIC=FALSE, OMP_PLACES=cores e OMP_PROC_BIND=TRUE.
+
+### Reproduzir profiling
+
+No nó GPU alocado, para a versão otimizada:
+
+```bash
+nsys profile --trace=cuda --sample=none --cpuctxsw=none --force-overwrite=true --output=perfil_cuda ./barenn_cuda --otimizado --epocas 1
+nsys stats --report cuda_api_sum,cuda_gpu_kern_sum,cuda_gpu_mem_time_sum perfil_cuda.nsys-rep
+ncu --section LaunchStats --section Occupancy --section SpeedOfLight --launch-count 1 ./barenn_cuda --otimizado --epocas 1
+```
+
+Para o perfil inicial, use o executável da v0.5 sem --otimizado. Os resumos de texto e o erro de permissão do Nsight Compute estão versionados. Os relatórios binários do profiler podem ser regenerados pelos comandos acima.
+
+Para gprof, compile a versão CPU desejada com -std=c++17 -O2 -g -pg, execute no nó CPU e gere o relatório com gprof -b -p EXECUTAVEL gmon.out. O tempo de uma execução instrumentada não substitui as medições sem profiler.
+
+## Referências de estudo
+
+- [Estudo de caso e profiling em GPU](https://insper.github.io/supercomp/aulas/profile-nvidia/): referência para a organização da migração e da cooperação entre threads numa rede pequena.
+- [Documentação do nvcc 12.8](https://docs.nvidia.com/cuda/archive/12.8.1/cuda-compiler-driver-nvcc/index.html): opção --fmad=false.
+- [Nsight Systems](https://docs.nvidia.com/nsight-systems/UserGuide/).
+- [Nsight Compute](https://docs.nvidia.com/nsight-compute/ProfilingGuide/).
 
 ---
 

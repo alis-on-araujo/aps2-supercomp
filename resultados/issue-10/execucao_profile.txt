@@ -1,0 +1,30 @@
+GPU: NVIDIA RTX A1000
+Modo: CUDA com fusao
+TREINO | 3823 imagens
+Epoca  1/1 | perda media 0.4129
+Tempo de treino 0.0180 s
+
+AVALIACAO FINAL
+Acuracia 63.9% | 1148 acertos em 1797 imagens
+Perda media 0.3087
+
+ALGUMAS INFERENCIAS
+Esperado  Previsto
+       0         0
+       1         1
+       2         1
+       3         3
+       5         3
+       8         2
+
+CONFUSOES MAIS FREQUENTES
+Esperado  Previsto  Ocorrencias
+       9         3           96
+       8         1           67
+       5         9           54
+Tempo de avaliacao 0.375549 ms
+Collecting data...
+Generating '/tmp/nsys-report-0465.qdstrm'
+[1/1] [0%                          ] perfil_cuda_otimizado.nsys-rep[1/1] [0%                          ] perfil_cuda_otimizado.nsys-rep[1/1] [11%                         ] perfil_cuda_otimizado.nsys-rep[1/1] [===========53%              ] perfil_cuda_otimizado.nsys-rep[1/1] [=======================95%  ] perfil_cuda_otimizado.nsys-rep[1/1] [========================100%] perfil_cuda_otimizado.nsys-rep[1/1] [========================100%] perfil_cuda_otimizado.nsys-rep
+Generated:
+    /home/alisonao/scratch/aps2/aps2-supercomp/resultados/issue-10/perfil_cuda_otimizado.nsys-rep
